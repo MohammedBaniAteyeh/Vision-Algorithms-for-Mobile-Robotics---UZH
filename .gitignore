@@ -8,6 +8,8 @@ Exercise*/exercise*_solution/
 *.zip
 *.mp4
 .vscode/
+BS.md
+commit_msg.txt
 
 # --- Windows / OneDrive clutter ---
 desktop.ini

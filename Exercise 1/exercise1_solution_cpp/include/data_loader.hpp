@@ -2,11 +2,10 @@
 
 #include <string>
 #include <vector>
-
 #include <Eigen/Dense>
 
-// One camera pose: (wx, wy, wz, tx, ty, tz)
-using PoseVector = Eigen::Matrix<double, 6, 1>;
+#include "math.hpp"
+
 
 // Camera matrix K (3x3) from K.txt
 Eigen::Matrix3d loadK(const std::string& path);
