@@ -29,6 +29,34 @@ Eigen::Matrix4Xd makeCheckerboardCorners(int nx, int ny, double square_size)
     return Pw;
 }
 
+// The 8 vertices of a cube standing on the board, as a 4x8 homogeneous matrix.
+// (x0, y0) = world position of one bottom corner, side = edge length, all in metres.
+// Columns 0-3: bottom face (Z = 0), columns 4-7: top face (Z = -side, since +Z points into the board).
+// Both faces go around in the same order, so vertex i + 4 sits right above vertex i.
+Eigen::Matrix4Xd makeCube(double x0, double y0, double side)
+{
+    const double x1 = x0 + side;
+    const double y1 = y0 + side;
+    const double z  = -side;
+
+    Eigen::Matrix4Xd cube(4, 8);
+    cube << x0, x1, x1, x0,   x0, x1, x1, x0,     // X
+            y0, y0, y1, y1,   y0, y0, y1, y1,     // Y
+            0,  0,  0,  0,    z,  z,  z,  z,      // Z
+            1,  1,  1,  1,    1,  1,  1,  1;      // homogeneous 1
+    return cube;
+}
+
+// The 12 cube edges as pairs of column indices into makeCube()'s matrix.
+std::vector<std::pair<int, int>> cubeEdges()
+{
+    return {
+        {0, 1}, {1, 2}, {2, 3}, {3, 0},   // bottom face
+        {4, 5}, {5, 6}, {6, 7}, {7, 4},   // top face
+        {0, 4}, {1, 5}, {2, 6}, {3, 7},   // vertical edges
+    };
+}
+
 int main()
 {
     const std::string data = DATA_DIR;
@@ -47,8 +75,13 @@ int main()
 
     cv::Mat img = cv::imread(img_path, cv::IMREAD_GRAYSCALE);
 
+    const double square = 0.04;
+    Eigen::Matrix4Xd cube = makeCube(2 * square, 1 * square, 2 * square);
+    Eigen::Matrix3Xd cube_pxls = projectPoints(K, T, cube);
+
     cv::Mat img_color = grayToColor(img);
-    drawPoints(img_color, pxls);
+    // drawPoints(img_color, pxls);
+    drawEdges(img_color, cube_pxls, cubeEdges());
     showImage("projection", img_color);
 
     return 0;

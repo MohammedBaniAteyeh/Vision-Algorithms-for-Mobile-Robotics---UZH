@@ -18,6 +18,16 @@ void drawPoints(cv::Mat& img, const Eigen::MatrixXd& uv, const cv::Scalar& color
     }
 }
 
+void drawEdges(cv::Mat& img, const Eigen::MatrixXd& uv, const std::vector<std::pair<int, int>>& edges,
+               const cv::Scalar& color, int thickness)
+{
+    for (const auto& [i, j] : edges) {
+        const cv::Point a(cvRound(uv(0, i)), cvRound(uv(1, i)));
+        const cv::Point b(cvRound(uv(0, j)), cvRound(uv(1, j)));
+        cv::line(img, a, b, color, thickness);
+    }
+}
+
 void showImage(const std::string& title, const cv::Mat& img)
 {
     cv::imshow(title, img);
