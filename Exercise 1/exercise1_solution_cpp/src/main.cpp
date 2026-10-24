@@ -11,6 +11,7 @@
 #include "projectPoints.hpp"
 #include "poseVectorToRT.hpp"
 #include "plotting.hpp"
+#include "distortPixels.hpp"
 
 
 // World positions of the checkerboard's inner corners as a 4xN homogeneous matrix:
@@ -67,6 +68,7 @@ int main()
 
     RotTrans T = poseVectorToRT(poses.at(0));
 
+    // --- Part 1: corners and cube on the undistorted image ---
     Eigen::Matrix4Xd Pw = makeCheckerboardCorners(9, 6, 0.04);
 
     Eigen::Matrix3Xd pxls = projectPoints(K, T, Pw);
@@ -83,6 +85,16 @@ int main()
     // drawPoints(img_color, pxls);
     drawEdges(img_color, cube_pxls, cubeEdges());
     showImage("projection", img_color);
+
+    // --- Part 2: projection onto the raw (distorted) image ---
+    Eigen::Vector2d D = loadD(data + "/D.txt");
+    Eigen::Matrix3Xd pxls_distorted = distortPixels(pxls, K, D);
+
+    cv::Mat raw = cv::imread(data + "/images/img_0001.jpg", cv::IMREAD_GRAYSCALE);
+    cv::Mat raw_color = grayToColor(raw);
+    drawPoints(raw_color, pxls, cv::Scalar(255, 0, 0));   // blue: ideal pixels (no distortion)
+    drawPoints(raw_color, pxls_distorted);                 // red: distorted pixels
+    showImage("distorted projection", raw_color);
 
     return 0;
 }

@@ -13,7 +13,7 @@ endif()
 find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs highgui videoio)
 find_package(Eigen3 3.4 REQUIRED NO_MODULE)
 
-add_executable(${PROJECT_NAME} src/main.cpp src/dataLoader.cpp src/poseVectorToRT.cpp src/projectPoints.cpp src/plotting.cpp)
+add_executable(${PROJECT_NAME} src/main.cpp src/dataLoader.cpp src/poseVectorToRT.cpp src/projectPoints.cpp src/plotting.cpp src/distortPixels.cpp)
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${OpenCV_LIBS} Eigen3::Eigen)
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
