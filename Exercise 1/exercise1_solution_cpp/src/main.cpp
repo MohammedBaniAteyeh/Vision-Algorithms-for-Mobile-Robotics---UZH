@@ -5,8 +5,13 @@
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp> 
 
-#include "data_loader.hpp"
+#include "dataLoader.hpp"
+#include "projectPoints.hpp"
+#include "poseVectorToRT.hpp"
+#include "plotting.hpp"
+
 
 // World positions of the checkerboard's inner corners as a 4xN homogeneous matrix:
 // one corner per column (X, Y, Z, 1), filled row by row (all X for y = 0, then y = 1, ...).
@@ -32,15 +37,19 @@ int main()
 
     std::vector<PoseVector> poses = loadPoses(data + "/poses.txt");
 
+    RotTrans T = poseVectorToRT(poses.at(0));
+
     Eigen::Matrix4Xd Pw = makeCheckerboardCorners(9, 6, 0.04);
+
+    Eigen::Matrix3Xd pxls = projectPoints(K, T, Pw);
 
     const std::string img_path = data + "/images_undistorted/img_0001.jpg";
 
     cv::Mat img = cv::imread(img_path, cv::IMREAD_GRAYSCALE);
 
-    cv::imshow("test", img);
-
-    cv::waitKey(0);
+    cv::Mat img_color = grayToColor(img);
+    drawPoints(img_color, pxls);
+    showImage("projection", img_color);
 
     return 0;
 }

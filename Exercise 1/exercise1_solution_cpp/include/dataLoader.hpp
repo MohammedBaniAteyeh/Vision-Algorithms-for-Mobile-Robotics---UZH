@@ -4,7 +4,7 @@
 #include <vector>
 #include <Eigen/Dense>
 
-#include "math.hpp"
+#include "dataTypes.hpp"
 
 
 // Camera matrix K (3x3) from K.txt
